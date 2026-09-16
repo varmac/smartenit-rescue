@@ -1,0 +1,23 @@
+services:
+  bridge:
+    build: .
+    image: smartenit-rescue:local
+    entrypoint:
+      - smartenit-rescue
+      - run
+      - --config
+      - /etc/smartenit-rescue/config.toml
+    read_only: true
+    restart: on-failure
+    volumes:
+      - ${SMARTENIT_RESCUE_PRIVATE_DIR:?Set an absolute private directory outside this checkout}/config.toml:/etc/smartenit-rescue/config.toml:ro
+      - ./operator-state:/var/lib/smartenit-rescue:rw
+    secrets:
+      - mqtt_username
+      - mqtt_password
+
+secrets:
+  mqtt_username:
+    file: ${SMARTENIT_RESCUE_PRIVATE_DIR:?Set an absolute private directory outside this checkout}/mqtt_username
+  mqtt_password:
+    file: ${SMARTENIT_RESCUE_PRIVATE_DIR:?Set an absolute private directory outside this checkout}/mqtt_password

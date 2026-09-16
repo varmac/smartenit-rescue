@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "smartenit-rescue"
+version = "0.1.0.dev0"
+description = "Unofficial experimental MQTT bridge for Smartenit controllers."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = [
+    "jsonschema>=4.23,<5",
+    "paho-mqtt>=2.1,<3",
+]
+
+[project.scripts]
+smartenit-rescue = "smartenit_rescue.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "mypy",
+    "ruff",
+    "build",
+    "pip-audit",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.hatch.build]
+exclude = ["/.scratch"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/smartenit_rescue"]
+
+[dependency-groups]
+dev = [
+    "types-jsonschema>=4.26.0.20260518",
+]

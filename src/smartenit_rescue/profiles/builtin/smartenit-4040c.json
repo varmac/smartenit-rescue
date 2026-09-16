@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "profile_id": "smartenit.4040c",
+  "manufacturer": "Compacta International, Ltd.",
+  "models": ["ZBMLCSR"],
+  "match": {
+    "zigbee_manufacturer_ids": [4213],
+    "zigbee_model_ids": ["ZBMLCSR"],
+    "required_endpoint_clusters": {"1": [6, 1794]},
+    "harmony": {
+      "required_processors": [],
+      "required_components": []
+    }
+  },
+  "endpoints": {
+    "1": {
+      "capabilities": [
+        {
+          "id": "on_off",
+          "driver": "zigbee.on_off",
+          "cluster_id": 6,
+          "readback": "available",
+          "writable": true,
+          "support_level": "synthetic",
+          "unit": null,
+          "normalization": null
+        },
+        {
+          "id": "electrical_power",
+          "driver": "zigbee.metering.power",
+          "cluster_id": 1794,
+          "readback": "available",
+          "writable": false,
+          "support_level": "synthetic",
+          "unit": "W",
+          "normalization": null
+        },
+        {
+          "id": "electrical_energy",
+          "driver": "zigbee.metering.energy",
+          "cluster_id": 1794,
+          "readback": "available",
+          "writable": false,
+          "support_level": "synthetic",
+          "unit": "kWh",
+          "normalization": null
+        },
+        {
+          "id": "voltage",
+          "driver": "zigbee.metering.voltage",
+          "cluster_id": 1794,
+          "readback": "available",
+          "writable": false,
+          "support_level": "synthetic",
+          "unit": "V",
+          "normalization": null
+        },
+        {
+          "id": "current",
+          "driver": "zigbee.metering.current",
+          "cluster_id": 1794,
+          "readback": "available",
+          "writable": false,
+          "support_level": "synthetic",
+          "unit": "A",
+          "normalization": null
+        }
+      ]
+    }
+  },
+  "availability": {
+    "device_class": "active",
+    "stale_after_seconds": 600
+  },
+  "limitations": [
+    {
+      "backend": "harmony_g2",
+      "capability": "on_off",
+      "description": "Harmony G2 state readback is not yet publicly verified"
+    },
+    {
+      "backend": "all",
+      "capability": "electrical_power",
+      "description": "Metering values and scaling require hardware verification"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "public_documentation",
+      "url": "https://docs.smartenit.com/zbmlcsr/zbmlcsr_product-brief.pdf",
+      "description": "4040C identity, manufacturer ID, endpoints, clusters, and metering"
+    },
+    {
+      "kind": "public_documentation",
+      "url": "https://docs.smartenit.com/zbmlcsr/zbmlcsr_quick-start.pdf",
+      "description": "4040C operation, indicators, joining, and local control"
+    }
+  ]
+}

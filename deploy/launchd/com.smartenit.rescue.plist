@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.smartenit.rescue</string>
+
+  <!-- Replace the account, group, both /PATH/TO values, and private state directory. -->
+  <key>UserName</key>
+  <string>&lt;SERVICE_USER&gt;</string>
+  <key>GroupName</key>
+  <string>&lt;SERVICE_GROUP&gt;</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/PATH/TO/smartenit-rescue</string>
+    <string>run</string>
+    <string>--config</string>
+    <string>/PATH/TO/config.toml</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>&lt;PRIVATE_STATE_DIR&gt;</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>ThrottleInterval</key>
+  <integer>5</integer>
+</dict>
+</plist>

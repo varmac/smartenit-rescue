@@ -1,0 +1,14 @@
+.worktrees/
+.scratch/
+docs/superpowers/
+.venv/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+__pycache__/
+.env
+*.egg-info
+operator-state/
+secrets/

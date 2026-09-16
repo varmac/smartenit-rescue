@@ -1,0 +1,817 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://smartenit-rescue.invalid/schemas/profile-v1.json",
+  "title": "Smartenit Rescue device profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "manufacturer",
+    "models",
+    "match",
+    "endpoints",
+    "availability",
+    "limitations",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "profile_id": {
+      "$ref": "#/$defs/dotted_identifier"
+    },
+    "manufacturer": {
+      "$ref": "#/$defs/nonblank_string"
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonblank_string"
+      }
+    },
+    "match": {
+      "$ref": "#/$defs/match_rules"
+    },
+    "endpoints": {
+      "$ref": "#/$defs/endpoints"
+    },
+    "availability": {
+      "$ref": "#/$defs/availability"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/limitation"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/limitation_on_off_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_electrical_power_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_electrical_energy_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_voltage_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_current_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_temperature_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_battery_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_level_is_declared"
+    },
+    {
+      "$ref": "#/$defs/limitation_thermostat_is_declared"
+    }
+  ],
+  "$defs": {
+    "nonblank_string": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "dotted_identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\\.[a-z0-9]+(?:-[a-z0-9]+)*)+$"
+    },
+    "driver_identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*(?:\\.[a-z][a-z0-9]*(?:_[a-z0-9]+)*)+$"
+    },
+    "capability_id": {
+      "enum": [
+        "on_off",
+        "electrical_power",
+        "electrical_energy",
+        "voltage",
+        "current",
+        "temperature",
+        "battery",
+        "level",
+        "thermostat"
+      ]
+    },
+    "support_level": {
+      "enum": [
+        "synthetic",
+        "experimental",
+        "hardware_verified"
+      ]
+    },
+    "string_set": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonblank_string"
+      }
+    },
+    "uint16_set": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 65535
+      }
+    },
+    "match_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zigbee_manufacturer_ids",
+        "zigbee_model_ids",
+        "required_endpoint_clusters",
+        "harmony"
+      ],
+      "properties": {
+        "zigbee_manufacturer_ids": {
+          "$ref": "#/$defs/uint16_set"
+        },
+        "zigbee_model_ids": {
+          "$ref": "#/$defs/string_set"
+        },
+        "required_endpoint_clusters": {
+          "$ref": "#/$defs/endpoint_clusters"
+        },
+        "harmony": {
+          "$ref": "#/$defs/harmony_rules"
+        }
+      }
+    },
+    "harmony_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_processors",
+        "required_components"
+      ],
+      "properties": {
+        "required_processors": {
+          "$ref": "#/$defs/string_set"
+        },
+        "required_components": {
+          "$ref": "#/$defs/string_set"
+        }
+      }
+    },
+    "endpoint_clusters": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-3][0-9]|240)$": {
+          "$ref": "#/$defs/uint16_set"
+        }
+      }
+    },
+    "endpoints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:[1-9]|[1-9][0-9]|1[0-9]{2}|2[0-3][0-9]|240)$": {
+          "$ref": "#/$defs/endpoint"
+        }
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilities"
+      ],
+      "properties": {
+        "capabilities": {
+          "$ref": "#/$defs/capabilities"
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/capability"
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/at_most_one_on_off"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_electrical_power"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_electrical_energy"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_voltage"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_current"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_temperature"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_battery"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_level"
+        },
+        {
+          "$ref": "#/$defs/at_most_one_thermostat"
+        }
+      ]
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "driver",
+        "cluster_id",
+        "readback",
+        "writable",
+        "support_level"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/capability_id"
+        },
+        "driver": {
+          "$ref": "#/$defs/driver_identifier"
+        },
+        "cluster_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "readback": {
+          "enum": [
+            "available",
+            "unavailable",
+            "report_only"
+          ]
+        },
+        "writable": {
+          "type": "boolean"
+        },
+        "support_level": {
+          "$ref": "#/$defs/support_level"
+        },
+        "unit": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/nonblank_string"
+            }
+          ]
+        },
+        "normalization": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/normalization"
+            }
+          ]
+        }
+      }
+    },
+    "normalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "multiplier",
+        "divisor"
+      ],
+      "properties": {
+        "multiplier": {
+          "type": "number"
+        },
+        "divisor": {
+          "type": "number",
+          "not": {
+            "const": 0
+          }
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device_class",
+        "stale_after_seconds"
+      ],
+      "properties": {
+        "device_class": {
+          "enum": [
+            "active",
+            "passive"
+          ]
+        },
+        "stale_after_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "limitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backend",
+        "capability",
+        "description"
+      ],
+      "properties": {
+        "backend": {
+          "$ref": "#/$defs/nonblank_string"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability_id"
+        },
+        "description": {
+          "$ref": "#/$defs/nonblank_string"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "url",
+        "description"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "public_documentation"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https?://[^\\s]+$"
+        },
+        "description": {
+          "$ref": "#/$defs/nonblank_string"
+        }
+      }
+    },
+    "at_most_one_on_off": {
+      "$ref": "#/$defs/at_most_one_on_off_impl"
+    },
+    "at_most_one_on_off_impl": {
+      "contains": {
+        "$ref": "#/$defs/is_on_off"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_electrical_power": {
+      "contains": {
+        "$ref": "#/$defs/is_electrical_power"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_electrical_energy": {
+      "contains": {
+        "$ref": "#/$defs/is_electrical_energy"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_voltage": {
+      "contains": {
+        "$ref": "#/$defs/is_voltage"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_current": {
+      "contains": {
+        "$ref": "#/$defs/is_current"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_temperature": {
+      "contains": {
+        "$ref": "#/$defs/is_temperature"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_battery": {
+      "contains": {
+        "$ref": "#/$defs/is_battery"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_level": {
+      "contains": {
+        "$ref": "#/$defs/is_level"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "at_most_one_thermostat": {
+      "contains": {
+        "$ref": "#/$defs/is_thermostat"
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "is_on_off": {
+      "$ref": "#/$defs/is_on_off_impl"
+    },
+    "is_on_off_impl": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "const": "on_off"
+        }
+      }
+    },
+    "is_electrical_power": {
+      "$ref": "#/$defs/is_electrical_power_impl"
+    },
+    "is_electrical_power_impl": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "electrical_power"}}
+    },
+    "is_electrical_energy": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "electrical_energy"}}
+    },
+    "is_voltage": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "voltage"}}
+    },
+    "is_current": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "current"}}
+    },
+    "is_temperature": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "temperature"}}
+    },
+    "is_battery": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "battery"}}
+    },
+    "is_level": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "level"}}
+    },
+    "is_thermostat": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"const": "thermostat"}}
+    },
+    "limitation_on_off_is_declared": {
+      "$ref": "#/$defs/limitation_on_off_is_declared_impl"
+    },
+    "limitation_on_off_is_declared_impl": {
+      "if": {
+        "$ref": "#/$defs/has_limitation_on_off"
+      },
+      "then": {
+        "$ref": "#/$defs/declares_on_off"
+      }
+    },
+    "limitation_electrical_power_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_electrical_power"},
+      "then": {"$ref": "#/$defs/declares_electrical_power"}
+    },
+    "limitation_electrical_energy_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_electrical_energy"},
+      "then": {"$ref": "#/$defs/declares_electrical_energy"}
+    },
+    "limitation_voltage_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_voltage"},
+      "then": {"$ref": "#/$defs/declares_voltage"}
+    },
+    "limitation_current_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_current"},
+      "then": {"$ref": "#/$defs/declares_current"}
+    },
+    "limitation_temperature_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_temperature"},
+      "then": {"$ref": "#/$defs/declares_temperature"}
+    },
+    "limitation_battery_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_battery"},
+      "then": {"$ref": "#/$defs/declares_battery"}
+    },
+    "limitation_level_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_level"},
+      "then": {"$ref": "#/$defs/declares_level"}
+    },
+    "limitation_thermostat_is_declared": {
+      "if": {"$ref": "#/$defs/has_limitation_thermostat"},
+      "then": {"$ref": "#/$defs/declares_thermostat"}
+    },
+    "has_limitation_on_off": {
+      "$ref": "#/$defs/has_limitation_on_off_impl"
+    },
+    "has_limitation_on_off_impl": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {
+        "limitations": {
+          "contains": {"$ref": "#/$defs/is_limitation_on_off"}
+        }
+      }
+    },
+    "has_limitation_electrical_power": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_electrical_power"}}}
+    },
+    "has_limitation_electrical_energy": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_electrical_energy"}}}
+    },
+    "has_limitation_voltage": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_voltage"}}}
+    },
+    "has_limitation_current": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_current"}}}
+    },
+    "has_limitation_temperature": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_temperature"}}}
+    },
+    "has_limitation_battery": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_battery"}}}
+    },
+    "has_limitation_level": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_level"}}}
+    },
+    "has_limitation_thermostat": {
+      "type": "object",
+      "required": ["limitations"],
+      "properties": {"limitations": {"contains": {"$ref": "#/$defs/is_limitation_thermostat"}}}
+    },
+    "is_limitation_on_off": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "on_off"}}
+    },
+    "is_limitation_electrical_power": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "electrical_power"}}
+    },
+    "is_limitation_electrical_energy": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "electrical_energy"}}
+    },
+    "is_limitation_voltage": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "voltage"}}
+    },
+    "is_limitation_current": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "current"}}
+    },
+    "is_limitation_temperature": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "temperature"}}
+    },
+    "is_limitation_battery": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "battery"}}
+    },
+    "is_limitation_level": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "level"}}
+    },
+    "is_limitation_thermostat": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {"capability": {"const": "thermostat"}}
+    },
+    "declares_on_off": {
+      "$ref": "#/$defs/declares_on_off_impl"
+    },
+    "declares_on_off_impl": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {
+        "endpoints": {
+          "$ref": "#/$defs/has_endpoint_capability_on_off"
+        }
+      }
+    },
+    "declares_electrical_power": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_electrical_power"}}
+    },
+    "declares_electrical_energy": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_electrical_energy"}}
+    },
+    "declares_voltage": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_voltage"}}
+    },
+    "declares_current": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_current"}}
+    },
+    "declares_temperature": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_temperature"}}
+    },
+    "declares_battery": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_battery"}}
+    },
+    "declares_level": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_level"}}
+    },
+    "declares_thermostat": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {"endpoints": {"$ref": "#/$defs/has_endpoint_capability_thermostat"}}
+    },
+    "has_endpoint_capability_on_off": {
+      "$ref": "#/$defs/has_endpoint_capability_on_off_impl"
+    },
+    "has_endpoint_capability_on_off_impl": {
+      "type": "object",
+      "not": {
+        "$ref": "#/$defs/no_endpoint_capability_on_off"
+      }
+    },
+    "has_endpoint_capability_electrical_power": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_electrical_power"}
+    },
+    "has_endpoint_capability_electrical_energy": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_electrical_energy"}
+    },
+    "has_endpoint_capability_voltage": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_voltage"}
+    },
+    "has_endpoint_capability_current": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_current"}
+    },
+    "has_endpoint_capability_temperature": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_temperature"}
+    },
+    "has_endpoint_capability_battery": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_battery"}
+    },
+    "has_endpoint_capability_level": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_level"}
+    },
+    "has_endpoint_capability_thermostat": {
+      "type": "object",
+      "not": {"$ref": "#/$defs/no_endpoint_capability_thermostat"}
+    },
+    "no_endpoint_capability_on_off": {
+      "patternProperties": {
+        ".*": {"$ref": "#/$defs/endpoint_without_on_off"}
+      }
+    },
+    "no_endpoint_capability_electrical_power": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_electrical_power"}}
+    },
+    "no_endpoint_capability_electrical_energy": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_electrical_energy"}}
+    },
+    "no_endpoint_capability_voltage": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_voltage"}}
+    },
+    "no_endpoint_capability_current": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_current"}}
+    },
+    "no_endpoint_capability_temperature": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_temperature"}}
+    },
+    "no_endpoint_capability_battery": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_battery"}}
+    },
+    "no_endpoint_capability_level": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_level"}}
+    },
+    "no_endpoint_capability_thermostat": {
+      "patternProperties": {".*": {"$ref": "#/$defs/endpoint_without_thermostat"}}
+    },
+    "endpoint_without_on_off": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_on_off"}}}}
+    },
+    "endpoint_without_electrical_power": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_electrical_power"}}}}
+    },
+    "endpoint_without_electrical_energy": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_electrical_energy"}}}}
+    },
+    "endpoint_without_voltage": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_voltage"}}}}
+    },
+    "endpoint_without_current": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_current"}}}}
+    },
+    "endpoint_without_temperature": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_temperature"}}}}
+    },
+    "endpoint_without_battery": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_battery"}}}}
+    },
+    "endpoint_without_level": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_level"}}}}
+    },
+    "endpoint_without_thermostat": {
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {"capabilities": {"not": {"contains": {"$ref": "#/$defs/is_thermostat"}}}}
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "profile_id": "example.synthetic-switch",
+  "manufacturer": "Example Devices",
+  "models": ["EXAMPLE-SWITCH"],
+  "match": {
+    "zigbee_manufacturer_ids": [4660],
+    "zigbee_model_ids": ["EXAMPLE-SWITCH"],
+    "required_endpoint_clusters": {"1": [6, 1794]},
+    "harmony": {
+      "required_processors": ["OnOff"],
+      "required_components": ["1"]
+    }
+  },
+  "endpoints": {
+    "1": {
+      "capabilities": [
+        {
+          "id": "on_off",
+          "driver": "zigbee.on_off",
+          "cluster_id": 6,
+          "readback": "available",
+          "writable": true,
+          "support_level": "synthetic",
+          "unit": null,
+          "normalization": null
+        }
+      ]
+    }
+  },
+  "availability": {
+    "device_class": "active",
+    "stale_after_seconds": 600
+  },
+  "limitations": [
+    {
+      "backend": "harmony_g2",
+      "capability": "on_off",
+      "description": "Synthetic fixture has no hardware readback evidence"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "public_documentation",
+      "url": "https://example.invalid/device-guide",
+      "description": "Synthetic fixture only"
+    }
+  ]
+}

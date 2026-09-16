@@ -1,0 +1,22 @@
+[runtime]
+client_id = "smartenit-rescue"
+topic_prefix = "smartenit-rescue/v1"
+discovery_prefix = "homeassistant"
+home_assistant_status_topic = "homeassistant/status"
+
+[mqtt]
+host = "localhost"
+port = 1883
+keepalive_seconds = 60
+tls = false
+username_file = "<mqtt-username-file>"
+password_file = "<mqtt-password-file>"
+
+[backend]
+type = "simulator"
+
+[[backend.devices]]
+device_id = "0200000000000001"
+name = "Synthetic Load"
+profile_id = "smartenit.4040c"
+initial_on = false
