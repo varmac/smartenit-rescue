@@ -266,7 +266,7 @@ def test_json_parse_error_is_bounded_and_located(tmp_path: Path) -> None:
     assert payload_marker not in message
 
 
-def test_json_recursion_is_bounded() -> None:
+def test_deep_json_rejection_is_bounded_and_located() -> None:
     payload_marker = "do-not-echo-recursive-profile-payload"
     raw_json = "[" * 2000 + f'"{payload_marker}"' + "]" * 2000
 
@@ -274,7 +274,11 @@ def test_json_recursion_is_bounded() -> None:
         _load_profile_json(raw_json, source="probe.json")
 
     message = str(caught.value)
-    assert message == "probe.json: $: invalid JSON"
+    # JSON parsing may hit a recursion limit or finish before root-type validation.
+    assert message in {
+        "probe.json: $: invalid JSON",
+        "probe.json: $: must be an object",
+    }
     assert payload_marker not in message
 
 
