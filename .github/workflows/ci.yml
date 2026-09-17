@@ -37,11 +37,8 @@ jobs:
           fi
           uv venv --seed --python .venv/bin/python .smoke-env
           env -u PYTHONPATH uv pip install --python .smoke-env/bin/python --no-cache "${WHEEL[0]}"
-          PROFILE_LIST="$(mktemp)"
-          env -u PYTHONPATH .smoke-env/bin/smartenit-rescue profiles list | tee "$PROFILE_LIST"
-          grep -q '^smartenit\.4040c\t' "$PROFILE_LIST"
-          env -u PYTHONPATH .smoke-env/bin/python -c "import smartenit_rescue.profiles; tuple(smartenit_rescue.profiles.iter_builtin_profiles())"
-          rm -f "$PROFILE_LIST"
+          env -u PYTHONPATH .smoke-env/bin/smartenit-rescue profiles list
+          env -u PYTHONPATH .smoke-env/bin/python -c "import smartenit_rescue.profiles as profiles; assert any(profile.profile_id == 'smartenit.4040c' for profile in profiles.iter_builtin_profiles())"
           rm -rf .smoke-env
       - run: uv run pip-audit
       - name: Verify clean exported source and release artifacts
