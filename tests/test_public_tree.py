@@ -411,15 +411,24 @@ def test_scan_tree_rejects_bare_credential_files(
     )
 
 
-def test_git_ignores_local_secrets_directory() -> None:
+def test_git_ignores_local_secrets_directory(tmp_path: Path) -> None:
     root = Path(__file__).parents[1]
+    (tmp_path / ".gitignore").write_text(
+        (root / ".gitignore").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    subprocess.run(
+        ["git", "init", "--quiet"], cwd=tmp_path, check=True, capture_output=True
+    )
     result = subprocess.run(
-        ["git", "check-ignore", "--no-index", "--quiet", "secrets/mqtt_username"],
-        cwd=root,
+        ["git", "check-ignore", "--no-index", "--verbose", "secrets/mqtt_username"],
+        cwd=tmp_path,
         check=False,
+        capture_output=True,
+        text=True,
     )
 
     assert result.returncode == 0
+    assert result.stdout.split(":", 1)[0] == ".gitignore"
 
 
 def test_scan_tree_checks_nested_worktree_content(tmp_path: Path) -> None:
